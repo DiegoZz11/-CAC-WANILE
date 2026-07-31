@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="/Utilities/investigacion.png" type="Icon-Banco" />
+    <title>Reporte de Mora</title>
+    <style>
+        .tabla-mora {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tabla-mora th {
+            background: #f0f4f8;
+            padding: 0.8rem 1rem;
+            text-align: left;
+        }
+        .tabla-mora td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .tabla-mora tr:hover td {
+            background: #f8faff;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-mora { background: #dc3545; color: #fff; }
+        .volver {
+            display: inline-block;
+            margin: 1.5rem 0;
+            color: #0066b3;
+            text-decoration: none;
+        }
+        .volver:hover { text-decoration: underline; }
+        .sin-resultados, .cargando {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <h1>Reporte de Mora</h1>
+        <p>Listado de socios con cuotas vencidas.</p>
+
+        <div style="margin-bottom: 1rem;">
+            <button id="btnRefrescar" style="padding:0.5rem 1.5rem;background:#0066b3;color:#fff;border:none;border-radius:6px;cursor:pointer;">Refrescar</button>
+        </div>
+
+        <table class="tabla-mora" id="tablaMora">
+            <thead>
+                <tr>
+                    <th>Socio</th>
+                    <th>Crédito ID</th>
+                    <th>Cuota</th>
+                    <th>Vencimiento</th>
+                    <th>Días de Atraso</th>
+                    <th>Monto Adeudado</th>
+                    <th>Mora</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoMora">
+                <tr><td colspan="8" class="cargando">Cargando reporte...</td></tr>
+            </tbody>
+        </table>
+
+        <a href="dashboard.html" class="volver">← Volver al Dashboard</a>
+    </div>
+</div>
+
+<script src="reporte-mora.js"></script>
+</body>
+</html>

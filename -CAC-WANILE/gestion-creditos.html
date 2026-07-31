@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="/Utilities/investigacion.png" type="Icon-Banco" />
+    <title>Gestión de Créditos</title>
+    <style>
+        /* Estilos específicos para esta página */
+        .filtros {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .filtros select, .filtros input {
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .tabla-creditos {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tabla-creditos th {
+            background: #f0f4f8;
+            color: #1a3b5d;
+            font-weight: 600;
+            padding: 0.8rem 1rem;
+            text-align: left;
+        }
+        .tabla-creditos td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .tabla-creditos tr:hover td {
+            background: #f8faff;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .badge-solicitado { background: #ffc107; color: #856404; }
+        .badge-aprobado { background: #17a2b8; color: #fff; }
+        .badge-desembolsado { background: #28a745; color: #fff; }
+        .badge-rechazado { background: #dc3545; color: #fff; }
+        .badge-cancelado { background: #6c757d; color: #fff; }
+        .acciones button {
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 0.3rem;
+        }
+        .btn-aprobar { background: #17a2b8; color: #fff; }
+        .btn-aprobar:hover { background: #138496; }
+        .btn-desembolsar { background: #28a745; color: #fff; }
+        .btn-desembolsar:hover { background: #1e7e34; }
+        .btn-ver { background: #6c757d; color: #fff; }
+        .btn-ver:hover { background: #5a6268; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-contenido {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-contenido h3 {
+            margin-top: 0;
+        }
+        .modal-contenido label {
+            display: block;
+            margin: 1rem 0 0.3rem;
+            font-weight: 600;
+        }
+        .modal-contenido input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .modal-botones {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+        }
+        .modal-botones button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-cancelar { background: #e9ecef; }
+        .btn-confirmar { background: #28a745; color: #fff; }
+        .btn-confirmar:hover { background: #1e7e34; }
+        .volver {
+            display: inline-block;
+            margin: 1.5rem 0;
+            color: #0066b3;
+            text-decoration: none;
+        }
+        .volver:hover { text-decoration: underline; }
+        .sin-resultados {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        .cargando {
+            text-align: center;
+            padding: 2rem;
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <h1>Gestión de Créditos</h1>
+        <p>Administre las solicitudes de préstamo: apruebe, desembolse y consulte el detalle.</p>
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <label for="filtroEstado">Filtrar por estado:</label>
+            <select id="filtroEstado">
+                <option value="todos">Todos</option>
+                <option value="solicitado">Solicitados</option>
+                <option value="aprobado">Aprobados</option>
+                <option value="desembolsado">Desembolsados</option>
+                <option value="rechazado">Rechazados</option>
+                <option value="cancelado">Cancelados</option>
+            </select>
+            <button id="btnRefrescar" style="padding:0.5rem 1rem; border-radius:6px; border:1px solid #0066b3; background:#fff; color:#0066b3; cursor:pointer;">Refrescar</button>
+        </div>
+
+        <!-- Tabla de créditos -->
+        <div id="tablaContainer">
+            <table class="tabla-creditos" id="tablaCreditos">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Socio</th>
+                        <th>Monto Solicitado</th>
+                        <th>Monto Aprobado</th>
+                        <th>Plazo (meses)</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoCreditos">
+                    <tr><td colspan="7" class="cargando">Cargando créditos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a href="dashboard.html" class="volver">← Volver al Dashboard</a>
+    </div>
+</div>
+
+<!-- Modal para aprobar -->
+<div id="modalAprobar" class="modal">
+    <div class="modal-contenido">
+        <h3>Aprobar Crédito</h3>
+        <p>Ingrese el monto que será aprobado (puede ser menor o igual al solicitado).</p>
+        <input type="hidden" id="creditoIdAprobar" />
+        <label for="montoAprobado">Monto a aprobar (Lps)</label>
+        <input type="number" id="montoAprobado" step="100" min="0" placeholder="Ej: 5000" required />
+        <div class="modal-botones">
+            <button class="btn-cancelar" id="btnCancelarAprobar">Cancelar</button>
+            <button class="btn-confirmar" id="btnConfirmarAprobar">Aprobar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====================
+    //  GESTIÓN DE CRÉDITOS - JavaScript
+    // ====================
+
+    (function() {
+        const token = localStorage.getItem('token');
+        const rol = localStorage.getItem('rol');
+        const tbody = document.getElementById('cuerpoCreditos');
+        const filtroSelect = document.getElementById('filtroEstado');
+        const btnRefrescar = document.getElementById('btnRefrescar');
+
+        // Verificar autenticación
+        if (!token) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc3545;">No has iniciado sesión. <a href="login.html">Iniciar sesión</a></td></tr>`;
+            return;
+        }
+
+        // Solo admin y tesorero pueden ver esta página
+        if (rol !== 'admin' && rol !== 'tesorero') {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc3545;">No tienes permisos para acceder a esta sección.</td></tr>`;
+            return;
+        }
+
+        // Función para obtener el badge de estado
+        function badgeEstado(estado) {
+            const clases = {
+                'solicitado': 'badge-solicitado',
+                'aprobado': 'badge-aprobado',
+                'desembolsado': 'badge-desembolsado',
+                'rechazado': 'badge-rechazado',
+                'cancelado': 'badge-cancelado'
+            };
+            return `<span class="badge ${clases[estado] || 'badge-cancelado'}">${estado}</span>`;
+        }
+
+        // Cargar créditos desde el backend
+        async function cargarCreditos(estado = 'todos') {
+            tbody.innerHTML = `<tr><td colspan="7" class="cargando">Cargando créditos...</td></tr>`;
+            try {
+                let url = '/api/creditos';
+                if (estado !== 'todos') {
+                    url += `?estado=${estado}`;
+                }
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) {
+                    throw new Error(`Error ${res.status}: ${res.statusText}`);
+                }
+                const data = await res.json();
+                if (Array.isArray(data) && data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="sin-resultados">No hay créditos en este estado.</td></tr>`;
+                } else if (Array.isArray(data)) {
+                    renderizarTabla(data);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="sin-resultados">Formato de datos inesperado.</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error al cargar créditos:', error);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc3545;">Error al cargar los créditos: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Renderizar tabla
+        function renderizarTabla(creditos) {
+            tbody.innerHTML = '';
+            creditos.forEach(c => {
+                const tr = document.createElement('tr');
+                // Acciones según estado y rol
+                let accionesHtml = '';
+                if (c.estado === 'solicitado' && (rol === 'admin' || rol === 'tesorero')) {
+                    accionesHtml += `<button class="btn-aprobar" data-id="${c.id}">Aprobar</button>`;
+                }
+                if (c.estado === 'aprobado' && (rol === 'admin' || rol === 'tesorero')) {
+                    accionesHtml += `<button class="btn-desembolsar" data-id="${c.id}">Desembolsar</button>`;
+                }
+                // Siempre mostrar botón Ver (lleva a detalle-credito.html)
+                accionesHtml += `<a href="detalle-credito.html?id=${c.id}" class="btn-ver" style="display:inline-block;padding:0.3rem 0.8rem;border-radius:4px;text-decoration:none;background:#6c757d;color:#fff;font-size:0.8rem;margin-left:0.3rem;">Ver</a>`;
+
+                tr.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.socio_nombre || 'N/A'}</td>
+                    <td>${Number(c.monto_solicitado).toFixed(2)}</td>
+                    <td>${c.monto_aprobado ? Number(c.monto_aprobado).toFixed(2) : '—'}</td>
+                    <td>${c.plazo_meses}</td>
+                    <td>${badgeEstado(c.estado)}</td>
+                    <td class="acciones">${accionesHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Asignar eventos a los botones de acción
+            document.querySelectorAll('.btn-aprobar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    abrirModalAprobar(id);
+                });
+            });
+
+            document.querySelectorAll('.btn-desembolsar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    desembolsarCredito(id);
+                });
+            });
+        }
+
+        // ======================
+        //  MODAL APROBAR
+        // ======================
+        const modal = document.getElementById('modalAprobar');
+        const inputId = document.getElementById('creditoIdAprobar');
+        const inputMonto = document.getElementById('montoAprobado');
+        const btnCancelar = document.getElementById('btnCancelarAprobar');
+        const btnConfirmar = document.getElementById('btnConfirmarAprobar');
+
+        function abrirModalAprobar(id) {
+            inputId.value = id;
+            inputMonto.value = '';
+            modal.style.display = 'flex';
+            inputMonto.focus();
+        }
+
+        function cerrarModal() {
+            modal.style.display = 'none';
+        }
+
+        btnCancelar.addEventListener('click', cerrarModal);
+
+        // Cerrar modal al hacer clic fuera del contenido
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) cerrarModal();
+        });
+
+        btnConfirmar.addEventListener('click', async function() {
+            const id = inputId.value;
+            const monto = parseFloat(inputMonto.value);
+            if (!id || isNaN(monto) || monto <= 0) {
+                alert('Ingrese un monto válido y mayor a 0.');
+                return;
+            }
+            // Deshabilitar botón para evitar múltiples envíos
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = 'Procesando...';
+
+            try {
+                const res = await fetch(`/api/creditos/${id}/aprobar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ montoAprobado: monto })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('✅ Crédito aprobado correctamente.');
+                    cerrarModal();
+                    // Recargar la tabla con el filtro actual
+                    cargarCreditos(filtroSelect.value);
+                } else {
+                    alert(`❌ Error: ${data.message || 'No se pudo aprobar el crédito.'}`);
+                }
+            } catch (error) {
+                console.error('Error al aprobar:', error);
+                alert('❌ Error de red. Intente de nuevo.');
+            } finally {
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Aprobar';
+            }
+        });
+
+        // ======================
+        //  DESEMBOLSAR
+        // ======================
+        async function desembolsarCredito(id) {
+            if (!confirm('¿Está seguro de desembolsar este crédito? Esta acción generará el plan de pagos.')) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/creditos/${id}/desembolsar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('✅ Crédito desembolsado correctamente.');
+                    cargarCreditos(filtroSelect.value);
+                } else {
+                    alert(`❌ Error: ${data.message || 'No se pudo desembolsar.'}`);
+                }
+            } catch (error) {
+                console.error('Error al desembolsar:', error);
+                alert('❌ Error de red. Intente de nuevo.');
+            }
+        }
+
+        // ======================
+        //  FILTRO Y REFRESCAR
+        // ======================
+        filtroSelect.addEventListener('change', function() {
+            cargarCreditos(this.value);
+        });
+
+        btnRefrescar.addEventListener('click', function() {
+            cargarCreditos(filtroSelect.value);
+        });
+
+        // Carga inicial
+        cargarCreditos('todos');
+    })();
+</script>
+
+</body>
+</html>

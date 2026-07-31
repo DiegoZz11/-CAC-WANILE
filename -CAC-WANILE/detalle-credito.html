@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="/Utilities/investigacion.png" type="Icon-Banco" />
+    <title>Detalle de Crédito</title>
+    <style>
+        .resumen-credito {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        .resumen-credito .campo {
+            display: inline-block;
+            margin-right: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .resumen-credito .campo strong {
+            color: #1a3b5d;
+        }
+        .tabla-plan {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tabla-plan th {
+            background: #f0f4f8;
+            padding: 0.8rem 1rem;
+            text-align: left;
+        }
+        .tabla-plan td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .tabla-plan tr:hover td {
+            background: #f8faff;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .badge-pendiente { background: #ffc107; color: #856404; }
+        .badge-pagado { background: #28a745; color: #fff; }
+        .badge-vencido { background: #dc3545; color: #fff; }
+        .volver {
+            display: inline-block;
+            margin: 1.5rem 0;
+            color: #0066b3;
+            text-decoration: none;
+        }
+        .volver:hover { text-decoration: underline; }
+        .cargando, .sin-resultados {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <h1>Detalle del Crédito</h1>
+        <div id="resumenCredito" class="resumen-credito">
+            <div class="cargando">Cargando información del crédito...</div>
+        </div>
+
+        <h2>Plan de Pagos</h2>
+        <table class="tabla-plan" id="tablaPlan">
+            <thead>
+                <tr>
+                    <th>Cuota</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Capital</th>
+                    <th>Interés</th>
+                    <th>Total</th>
+                    <th>Saldo Restante</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoPlan">
+                <tr><td colspan="7" class="cargando">Cargando plan de pagos...</td></tr>
+            </tbody>
+        </table>
+
+        <a href="gestion-creditos.html" class="volver">← Volver a Gestión de Créditos</a>
+    </div>
+</div>
+
+<script src="detalle-credito.js"></script>
+</body>
+</html>

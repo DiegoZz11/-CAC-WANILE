@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="/Utilities/investigacion.png" type="Icon-Banco" />
+    <title>Solicitar Crédito</title>
+    <style>
+    
+        .form-credito {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .form-credito label {
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .form-credito input, .form-credito select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 0.3rem;
+        }
+        .btn-enviar {
+            background: #0066b3;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-enviar:hover {
+            background: #004d8c;
+        }
+        .mensaje {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 6px;
+            display: none;
+        }
+        .mensaje.exito {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .mensaje.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .volver {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #0066b3;
+            text-decoration: none;
+        }
+        .volver:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Solicitar Crédito</h1>
+            <p>Complete el formulario para solicitar un nuevo préstamo.</p>
+
+            <form id="formSolicitarCredito" class="form-credito">
+                <label for="monto">Monto solicitado (Lps)</label>
+                <input type="number" id="monto" name="monto" min="1000" step="100" required placeholder="Ej: 5000" />
+
+                <label for="plazo">Plazo (meses)</label>
+                <select id="plazo" name="plazo" required>
+                    <option value="6">6 meses</option>
+                    <option value="12" selected>12 meses</option>
+                    <option value="18">18 meses</option>
+                    <option value="24">24 meses</option>
+                    <option value="36">36 meses</option>
+                </select>
+
+                <label for="tasa">Tasa de interés mensual (%)</label>
+                <input type="number" id="tasa" name="tasa" step="0.01" value="2.5" required readonly />
+                <small style="color: #666;">La tasa es fija según el reglamento.</small>
+
+                <button type="submit" class="btn-enviar">Enviar solicitud</button>
+            </form>
+
+            <div id="mensaje" class="mensaje"></div>
+
+            <a href="dashboard.html" class="volver">← Volver al Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Cargamos el script específico -->
+    <script src="solicitar-credito.js"></script>
+</body>
+</html>

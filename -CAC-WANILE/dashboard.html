@@ -1,48 +1,165 @@
-<!doctype html>
-<html lang="en">
-  <head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="/Utilities/investigacion.png" type="Icon-Banco" />
-    <title>Dashboard</title>
-  </head>
-  <body>
-    <div class="container">
-      <div class="content">
-        <h1>Bienvenido administrador</h1>
-      </div>
+    <title>Dashboard - WANILE</title>
+    <style>
+        /* Estilos para el dashboard y navegación */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .card-dash {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        .card-dash .numero {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a3b5d;
+            margin: 0.5rem 0;
+        }
+        .card-dash .etiqueta {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tabla-movimientos {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-top: 1rem;
+        }
+        .tabla-movimientos th {
+            background: #f0f4f8;
+            color: #1a3b5d;
+            font-weight: 600;
+            padding: 0.8rem 1rem;
+            text-align: left;
+        }
+        .tabla-movimientos td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .tabla-movimientos tr:hover td {
+            background: #f8faff;
+        }
+        .menu-acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e9edf2;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .menu-acciones a {
+            background: #0066b3;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .menu-acciones a:hover {
+            background: #004d8c;
+        }
+        .menu-acciones a.secundario {
+            background: #6c757d;
+        }
+        .menu-acciones a.secundario:hover {
+            background: #5a6268;
+        }
+        .saludo {
+            margin: 1rem 0 0.5rem;
+            font-size: 1.2rem;
+            color: #1a3b5d;
+        }
+        .fecha-actual {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <!-- Encabezado con saludo y fecha -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>
+                <h1>Dashboard</h1>
+                <div class="saludo" id="saludoUsuario">Bienvenido, Administrador</div>
+            </div>
+            <div class="fecha-actual" id="fechaActual"></div>
+        </div>
 
-      <div>
-        <card class="view">Socios registrados:</card>
-      </div>
+        <!-- Menú de acciones según rol -->
+        <div class="menu-acciones" id="menuAcciones">
+            <!-- Los enlaces se mostrarán/ocultarán según el rol desde JS -->
+            <a href="solicitar-credito.html">Solicitar Crédito</a>
+            <a href="gestion-creditos.html" id="linkGestionCreditos" style="display:none;">Gestionar Créditos</a>
+            <a href="caja-pagos.html" id="linkCajaPagos" style="display:none;">Caja de Pagos</a>
+            <a href="reporte-mora.html" id="linkReporteMora" style="display:none;">Reporte de Mora</a>
+            <a href="perfil.html" class="secundario">Mi Perfil</a>
+            <a href="#" id="btnCerrarSesion" class="secundario" style="background:#dc3545;">Cerrar Sesión</a>
+        </div>
 
-      <div>
-        <card class="view">Cuentas activas:</card>
-      </div>
+        <!-- Cards de estadísticas -->
+        <div class="dashboard-grid" id="statsGrid">
+            <div class="card-dash">
+                <div class="etiqueta">Socios Registrados</div>
+                <div class="numero" id="totalSocios">0</div>
+            </div>
+            <div class="card-dash">
+                <div class="etiqueta">Cuentas Activas</div>
+                <div class="numero" id="totalCuentas">0</div>
+            </div>
+            <div class="card-dash">
+                <div class="etiqueta">Créditos Activos</div>
+                <div class="numero" id="totalCreditosActivos">0</div>
+            </div>
+            <div class="card-dash">
+                <div class="etiqueta">Total Ahorrado</div>
+                <div class="numero" id="totalAhorros">Lps 0</div>
+            </div>
+            <div class="card-dash">
+                <div class="etiqueta">Movimientos del Día</div>
+                <div class="numero" id="movimientosDia">0</div>
+            </div>
+        </div>
 
-      <div>
-        <card class="view">Créditos activos:</card>
-      </div>
-
-      <div>
-        <card class="view">Dinero ahorrado:</card>
-      </div>
-
-      <div>
-        <card class="view">Movimientos del día:</card>
-      </div>
-
-      <h2>Últimos movimientos</h2>
-
-      <table>
-        <tr>
-          <td>Fecha</td>
-          <td>Socio</td>
-          <td>Monto</td>
-          <td>Tipo</td>
-        </tr>
-      </table>
+        <!-- Tabla de últimos movimientos -->
+        <h2 style="margin-top:2rem;">Últimos Movimientos</h2>
+        <table class="tabla-movimientos" id="tablaMovimientos">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Socio</th>
+                    <th>Monto</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoMovimientos">
+                <tr><td colspan="4" style="text-align:center;color:#6c757d;">Cargando movimientos...</td></tr>
+            </tbody>
+        </table>
     </div>
-  </body>
+</div>
+
+<!-- Script del dashboard -->
+<script src="dashboard.js"></script>
+</body>
 </html>
